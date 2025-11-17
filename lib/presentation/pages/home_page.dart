@@ -1,22 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../viewmodels/forecast_viewmodel.dart';
 import '../widgets/day_card.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
+
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  final lonC = TextEditingController(text: '14.333');
-  final latC = TextEditingController(text: '60.383');
-  final floatFilter = [FilteringTextInputFormatter.allow(RegExp(r'^-?\\d*\\.?\\d*\$'))];
+  late final TextEditingController _lonC;
+  late final TextEditingController _latC;
+
+  // Tillåt siffror, ev. minus, och punkt ELLER komma som decimal.
+  final List<TextInputFormatter> _floatFilter =  [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*([.,]\d*)?$'),),];
 
   @override
-  void dispose() { lonC.dispose(); latC.dispose(); super.dispose(); }
+  void initState() {
+    super.initState();
+    _lonC = TextEditingController(text: '17.617');
+    _latC = TextEditingController(text: '59.180');
+  }
+
+  @override
+  void dispose() {
+    _lonC.dispose();
+    _latC.dispose();
+    super.dispose();
+  }
+
+  double? _parseFloat(String s) =>
+      double.tryParse(s.replaceAll(',', '.'));
+
+  void _onFetch() {
+    final lon = _parseFloat(_lonC.text.trim());
+    final lat = _parseFloat(_latC.text.trim());
+    if (lon == null || lat == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter valid float values for lon/lat')),
+      );
+      return;
+    }
+    ref.read(forecastProvider.notifier).load(lon, lat);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,32 +61,36 @@ class _HomePageState extends ConsumerState<HomePage> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Expanded(child: TextFormField(
-                    controller: lonC,
-                    inputFormatters: floatFilter,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                    decoration: const InputDecoration(labelText: 'Longitude (float)'),
-                  )),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _lonC,
+                      inputFormatters: _floatFilter,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Longitude (float)',
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(
-                    controller: latC,
-                    inputFormatters: floatFilter,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                    decoration: const InputDecoration(labelText: 'Latitude (float)'),
-                  )),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _latC,
+                      inputFormatters: _floatFilter,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Latitude (float)',
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: () {
-                      final lon = double.tryParse(lonC.text);
-                      final lat = double.tryParse(latC.text);
-                      if (lon == null || lat == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Enter valid float values for lon/lat'))
-                        );
-                        return;
-                      }
-                      ref.read(forecastProvider.notifier).load(lon, lat);
-                    },
+                    onPressed: _onFetch,
                     child: const Text('Fetch'),
                   ),
                 ],
@@ -73,11 +107,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                         width: double.infinity,
                         color: Colors.amber,
                         padding: const EdgeInsets.all(8),
-                        child: const Text('Offline: showing cached data', textAlign: TextAlign.center),
+                        child: const Text(
+                          'Offline: showing cached data',
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     Expanded(
                       child: OrientationBuilder(
-                        builder: (ctx, o) => ListView.builder(
+                        builder: (ctx, orientation) => ListView.builder(
                           itemCount: d.days.length,
                           itemBuilder: (ctx, i) => DayCard(d.days[i]),
                         ),

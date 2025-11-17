@@ -12,11 +12,11 @@ class SmhiApi {
       ? Uri.parse('https://maceo.sth.kth.se/weather/forecast?lonLat=lon/$lon/lat/$lat') // dev only
       : Uri.parse('https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/$lon/lat/$lat/data.json');
 
-    final res = await http.get(uri);
+
+    final res = await http.get(uri).timeout(const Duration(seconds: 8));
     if (res.statusCode != 200) {
-      throw Exception('HTTP ${res.statusCode}');
+      throw Exception('SMHI HTTP ${res.statusCode} for $uri');
     }
-    // parse i bakgrundsisolate om stort:
     return compute(_parseSmhi, res.body);
   }
 }
