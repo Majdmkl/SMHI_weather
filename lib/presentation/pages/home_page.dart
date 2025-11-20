@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../viewmodels/forecast_viewmodel.dart';
 import '../viewmodels/place_viewmodel.dart';
 import '../widgets/day_card.dart';
+import '../pages/favorites_page.dart';
 import '../../domain/entities/place.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -51,6 +53,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   void _usePlace(Place p) {
+    // uppdatera även platsnamnsfältet så det matchar vald plats
+    _placeC.text = p.name.split(',').first;
     _lonC.text = p.lon.toStringAsFixed(3);
     _latC.text = p.lat.toStringAsFixed(3);
     _fetchWithCurrentLonLat();
@@ -62,7 +66,28 @@ class _HomePageState extends ConsumerState<HomePage> {
     final placeState = ref.watch(placeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('SMHI Weather')),
+      appBar: AppBar(
+        title: const Text('SMHI Weather'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.star),
+            tooltip: 'Favourites',
+            onPressed: () async {
+              // Öppna favoritsidan och vänta på en ev. vald plats
+              final Place? selected = await Navigator.push<Place>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FavoritesPage(),
+                ),
+              );
+
+              if (selected != null) {
+                _usePlace(selected);
+              }
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -82,7 +107,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 child: SizedBox(
                                   width: 16,
                                   height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 ),
                               )
                             : IconButton(
@@ -108,8 +135,10 @@ class _HomePageState extends ConsumerState<HomePage> {
             if (placeState.error != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text('Place search error: ${placeState.error}',
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Place search error: ${placeState.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             if (placeState.searchResults.isNotEmpty)
               SizedBox(
@@ -132,7 +161,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
 
-            // --- Favoritplatser ---
+            // --- Favoritplatser (snabbchips på startsidan) ---
             if (placeState.favorites.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
@@ -164,9 +193,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                       controller: _lonC,
                       inputFormatters: _floatFilter,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true, signed: true),
-                      decoration:
-                          const InputDecoration(labelText: 'Longitude (float)'),
+                        decimal: true,
+                        signed: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Longitude (float)',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -175,9 +207,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                       controller: _latC,
                       inputFormatters: _floatFilter,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true, signed: true),
-                      decoration:
-                          const InputDecoration(labelText: 'Latitude (float)'),
+                        decimal: true,
+                        signed: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Latitude (float)',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -192,7 +227,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             // --- Själva prognosen ---
             Expanded(
               child: forecastState.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(child: Text('Error: $e')),
                 data: (d) => Column(
                   children: [
