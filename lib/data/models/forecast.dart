@@ -16,29 +16,55 @@ class SmhiTimeStep {
   final String validTime;
   final List<SmhiParameter> parameters;
 
-  SmhiTimeStep({required this.validTime, required this.parameters});
+  SmhiTimeStep({
+    required this.validTime,
+    required this.parameters,
+  });
 
   factory SmhiTimeStep.fromJson(Map<String, dynamic> json) =>
       _$SmhiTimeStepFromJson(json);
   Map<String, dynamic> toJson() => _$SmhiTimeStepToJson(this);
 
+  // --------- DATA GETTERS ---------
+
+  /// Temperatur (°C)
   double? get temperature => _valueFor('t');
+
+  /// Molnighet (0–100 %)
   double? get cloudiness => _valueFor('tcc_mean');
 
+  /// Nederbörd (mm/h)
+  double? get precipitation => _valueFor('pmean');
+
+  /// Vindhastighet (m/s)
+  double? get windSpeed => _valueFor('ws');
+
+  // --------- HJÄLPFUNKTION ---------
+
   double? _valueFor(String name) {
-    final p = parameters.where((e) => e.name == name);
-    if (p.isEmpty) return null;
-    final vals = p.first.values;
-    return (vals != null && vals.isNotEmpty) ? vals.first : null;
+    final match = parameters.firstWhere(
+      (p) => p.name == name,
+      orElse: () => SmhiParameter(name: name, values: null),
+    );
+
+    final vals = match.values;
+    if (vals == null || vals.isEmpty) return null;
+
+    final v = vals.first;
+    if (v is num) return v.toDouble();
+    return double.tryParse(v.toString());
   }
 }
 
 @JsonSerializable()
 class SmhiParameter {
   final String name;
-  final List<double>? values;
+  final List<dynamic>? values; // vissa SMHI-värden är int/double
 
-  SmhiParameter({required this.name, this.values});
+  SmhiParameter({
+    required this.name,
+    this.values,
+  });
 
   factory SmhiParameter.fromJson(Map<String, dynamic> json) =>
       _$SmhiParameterFromJson(json);

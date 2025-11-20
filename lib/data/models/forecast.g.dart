@@ -32,9 +32,7 @@ Map<String, dynamic> _$SmhiTimeStepToJson(SmhiTimeStep instance) =>
 SmhiParameter _$SmhiParameterFromJson(Map<String, dynamic> json) =>
     SmhiParameter(
       name: json['name'] as String,
-      values: (json['values'] as List<dynamic>?)
-          ?.map((e) => (e as num).toDouble())
-          .toList(),
+      values: json['values'] as List<dynamic>?,
     );
 
 Map<String, dynamic> _$SmhiParameterToJson(SmhiParameter instance) =>
