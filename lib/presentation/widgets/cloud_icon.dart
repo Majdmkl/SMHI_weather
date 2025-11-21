@@ -1,4 +1,3 @@
-// lib/presentation/widgets/cloud_icon.dart
 import 'package:flutter/material.dart';
 
 class CloudIcon extends StatelessWidget {

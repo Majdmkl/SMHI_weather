@@ -1,4 +1,3 @@
-// lib/presentation/widgets/hour_card.dart
 import 'package:flutter/material.dart';
 import '../../domain/entities/daily_forecast.dart';
 import 'cloud_icon.dart';
