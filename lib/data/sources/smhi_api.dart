@@ -4,20 +4,25 @@ import 'package:http/http.dart' as http;
 import '../models/forecast.dart';
 
 class SmhiApi {
-  final bool useTestMirror;
-  SmhiApi({this.useTestMirror = false});
+  // REMOVED: useTestMirror flag - always use production API
 
   Future<SmhiRoot> getForecast(double lon, double lat) async {
-    final uri = useTestMirror
-      ? Uri.parse('https://maceo.sth.kth.se/weather/forecast?lonLat=lon/$lon/lat/$lat') // dev only
-      : Uri.parse('https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/$lon/lat/$lat/data.json');
+    // Always use the production SMHI API
+    final uri = Uri.parse(
+        'https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/$lon/lat/$lat/data.json'
+    );
 
+    try {
+      final res = await http.get(uri).timeout(const Duration(seconds: 10));
 
-    final res = await http.get(uri).timeout(const Duration(seconds: 8));
-    if (res.statusCode != 200) {
-      throw Exception('SMHI HTTP ${res.statusCode} for $uri');
+      if (res.statusCode != 200) {
+        throw Exception('SMHI HTTP ${res.statusCode} for $uri');
+      }
+
+      return compute(_parseSmhi, res.body);
+    } catch (e) {
+      throw Exception('Failed to fetch forecast: $e');
     }
-    return compute(_parseSmhi, res.body);
   }
 }
 

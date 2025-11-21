@@ -5,7 +5,8 @@ import '../../domain/entities/place.dart';
 
 /// Repo-provider: håller reda på PlaceRepository (API + ev. lagring)
 final placeRepoProvider = Provider<PlaceRepository>((ref) {
-  return PlaceRepository(api: PlaceApi(useTestMirror: true));
+  // REMOVED: useTestMirror: true - now always uses production API
+  return PlaceRepository(api: PlaceApi());
 });
 
 /// State för sök + favoriter

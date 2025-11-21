@@ -7,7 +7,7 @@ import '../../domain/entities/daily_forecast.dart';
 // Repo-provider (håller API + cache)
 final repoProvider = Provider<ForecastRepository>((ref) {
   return ForecastRepository(
-    api: SmhiApi(useTestMirror: false), // true under utveckling, false i slutversion
+    api: SmhiApi(), // REMOVED: useTestMirror: false - always production
     cache: CacheStore(),
   );
 });
