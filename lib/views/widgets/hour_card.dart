@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/daily_forecast.dart';
+import '../../models/forecast_model.dart';
 import 'cloud_icon.dart';
 
 class HourCard extends StatelessWidget {
@@ -19,7 +19,7 @@ class HourCard extends StatelessWidget {
         cloudiness: hour.cloudiness,
         precipitation: hour.precipitation,
         windSpeed: hour.windSpeed,
-        time: hour.time, // här styrs natt/dag-ikon
+        time: hour.time,
       ),
       title: Text(timeStr),
       trailing: Text(tempStr),

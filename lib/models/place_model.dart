@@ -10,10 +10,10 @@ class Place {
   });
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'lat': lat,
-        'lon': lon,
-      };
+    'name': name,
+    'lat': lat,
+    'lon': lon,
+  };
 
   factory Place.fromJson(Map<String, dynamic> json) {
     return Place(

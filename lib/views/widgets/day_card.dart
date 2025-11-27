@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/daily_forecast.dart';
+import '../../models/forecast_model.dart';
 import 'cloud_icon.dart';
 import 'hour_card.dart';
 
@@ -26,19 +26,16 @@ class DayCard extends StatelessWidget {
     final minStr = day.minT.isNaN ? '-' : '${day.minT.toStringAsFixed(1)}°C';
     final maxStr = day.maxT.isNaN ? '-' : '${day.maxT.toStringAsFixed(1)}°C';
 
-    // Daglig overview – alltid "dag-ikon" (ingen tid skickas)
     final header = ListTile(
       leading: CloudIcon(
         cloudiness: day.meanCloud,
         precipitation: day.meanPrecip,
         windSpeed: day.meanWind,
-        // time = null => _isNight = false, dag-ikon
       ),
       title: Text(dateStr),
       subtitle: Text('Min: $minStr • Max: $maxStr'),
     );
 
-    // Om ingen hourly-data: bara dagöversikten
     if (day.hourly.isEmpty) {
       return Card(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -46,7 +43,6 @@ class DayCard extends StatelessWidget {
       );
     }
 
-    // Idag: dagöversikt + timvis lista
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Column(
