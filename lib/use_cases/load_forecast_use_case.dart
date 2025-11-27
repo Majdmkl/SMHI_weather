@@ -1,8 +1,8 @@
 import '../models/forecast_model.dart';
 import '../repositories/forecast_repository.dart';
 
-/// Use Case: Ladda väderprognos
-/// Affärslogik: Hämta data och konvertera till daglig prognos
+/// Use Case: load weather forecast
+/// Business logic: Retrieve data and convert to daily forecast
 class LoadForecastUseCase {
   final ForecastRepository _repository;
 
@@ -14,7 +14,7 @@ class LoadForecastUseCase {
     return result.when(
       ok: (tuple) {
         final (root, isOffline) = tuple;
-        // Affärslogik: Konvertera till daglig prognos
+        // Business Logic: Convert to Daily Forecast
         final days = toDaily(root.timeSeries);
 
         return LoadForecastResult.success(
@@ -29,7 +29,7 @@ class LoadForecastUseCase {
   }
 }
 
-/// Result class för Load Forecast
+/// Result class for Load Forecast
 class LoadForecastResult {
   final List<DailyForecast> days;
   final bool isOffline;

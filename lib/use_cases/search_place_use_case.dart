@@ -1,7 +1,7 @@
 import '../models/place_model.dart';
 import '../repositories/place_repository.dart';
 
-/// Use Case: Sök efter platser
+/// Use Case: Search for places
 class SearchPlaceUseCase {
   final PlaceRepository _repository;
 

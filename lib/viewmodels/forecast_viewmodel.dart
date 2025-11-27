@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import '../models/forecast_model.dart';
 import '../use_cases/load_forecast_use_case.dart';
 
-/// ForecastViewModel - endast presentation logic
-/// Affärslogik delegeras till Use Cases
+/// ForecastViewModel - only presentation logic
+/// Business logic is delegated to Use Cases
 class ForecastViewModel extends ChangeNotifier {
   final LoadForecastUseCase _loadForecastUseCase;
 
@@ -26,16 +26,16 @@ class ForecastViewModel extends ChangeNotifier {
     required LoadForecastUseCase loadForecastUseCase,
   }) : _loadForecastUseCase = loadForecastUseCase;
 
-  /// Ladda prognos (delegerar till Use Case)
+  /// Load forecast (delegated to Use Cases)
   Future<void> loadForecast(double lon, double lat) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    // Delegera affärslogik till Use Case
+    // Delegate business logic to Use Case
     final result = await _loadForecastUseCase.execute(lon, lat);
 
-    // Uppdatera presentation state
+    // Update presentation state
     if (result.isSuccess) {
       _days = result.days;
       _isOffline = result.isOffline;
@@ -49,7 +49,7 @@ class ForecastViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Rensa fel (presentation logic)
+  /// Clear errors (presentation logic)
   void clearError() {
     _error = null;
     notifyListeners();

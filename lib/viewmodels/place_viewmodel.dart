@@ -3,8 +3,8 @@ import '../models/place_model.dart';
 import '../use_cases/search_place_use_case.dart';
 import '../use_cases/manage_favorites_use_case.dart';
 
-/// PlaceViewModel - endast presentation logic
-/// Affärslogik delegeras till Use Cases
+/// PlaceViewModel - only presentation logic
+/// Business logic is delegated to Use Cases
 class PlaceViewModel extends ChangeNotifier {
   final SearchPlaceUseCase _searchPlaceUseCase;
   final ManageFavoritesUseCase _manageFavoritesUseCase;
@@ -30,13 +30,13 @@ class PlaceViewModel extends ChangeNotifier {
     _loadFavorites();
   }
 
-  /// Ladda favoriter vid start
+  /// Load favorites at start
   Future<void> _loadFavorites() async {
     _favorites = await _manageFavoritesUseCase.loadFavorites();
     notifyListeners();
   }
 
-  /// Sök efter platser (delegerar till Use Case)
+  /// Search for locations (delegates to Use Case)
   Future<void> search(String query) async {
     if (query.trim().isEmpty) {
       _searchResults = [];
@@ -48,10 +48,10 @@ class PlaceViewModel extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    // Delegera affärslogik till Use Case
+    // Delegate business logic to Use Case
     final result = await _searchPlaceUseCase.execute(query);
 
-    // Uppdatera presentation state
+    // Update presentation state
     if (result.isSuccess) {
       _searchResults = result.places;
       _error = null;
@@ -64,9 +64,9 @@ class PlaceViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle favorit (delegerar till Use Case)
+  /// Toggle favorite (delegates to Use Case)
   Future<void> toggleFavorite(Place place) async {
-    // Delegera affärslogik till Use Case
+    // Delegate business logic to Use Case
     _favorites = await _manageFavoritesUseCase.toggleFavorite(
       place,
       _favorites,
@@ -74,13 +74,13 @@ class PlaceViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Rensa sökresultat (presentation logic)
+  /// Clean search results (presentation logic)
   void clearSearchResults() {
     _searchResults = [];
     notifyListeners();
   }
 
-  /// Rensa fel (presentation logic)
+  /// Clean errors (presentation logic)
   void clearError() {
     _error = null;
     notifyListeners();

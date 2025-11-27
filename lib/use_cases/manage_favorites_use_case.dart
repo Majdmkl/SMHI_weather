@@ -1,19 +1,19 @@
 import '../models/place_model.dart';
 import '../repositories/place_repository.dart';
 
-/// Use Case: Hantera favoriter
-/// Affärslogik: Ladda, spara, och toggle favoriter
+/// Use Case: handles favorites
+/// Business logic: Load, save, and toggle favorites
 class ManageFavoritesUseCase {
   final PlaceRepository _repository;
 
   ManageFavoritesUseCase(this._repository);
 
-  /// Ladda alla favoriter
+  /// Load all favoriter
   Future<List<Place>> loadFavorites() async {
     return await _repository.loadFavorites();
   }
 
-  /// Toggle favorit (lägg till eller ta bort)
+  /// Toggle favorit (add or remove)
   Future<List<Place>> toggleFavorite(
       Place place,
       List<Place> currentFavorites,
@@ -21,11 +21,11 @@ class ManageFavoritesUseCase {
     final newFavorites = List<Place>.from(currentFavorites);
 
     if (_repository.isFavorite(place, currentFavorites)) {
-      // Ta bort
+      // Remove
       newFavorites.removeWhere((p) =>
       p.lat == place.lat && p.lon == place.lon && p.name == place.name);
     } else {
-      // Lägg till
+      // add
       newFavorites.add(place);
     }
 
@@ -33,7 +33,7 @@ class ManageFavoritesUseCase {
     return newFavorites;
   }
 
-  /// Kolla om en plats är favorit
+  /// Check if a place is a favorite
   bool isFavorite(Place place, List<Place> favorites) {
     return _repository.isFavorite(place, favorites);
   }

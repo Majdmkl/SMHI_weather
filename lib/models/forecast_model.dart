@@ -25,16 +25,16 @@ class SmhiTimeStep {
       _$SmhiTimeStepFromJson(json);
   Map<String, dynamic> toJson() => _$SmhiTimeStepToJson(this);
 
-  /// Temperatur (°C)
+  /// Temperature (°C)
   double? get temperature => _valueFor('t');
 
-  /// Molnighet (0–100 %)
+  /// Cloudiness (0–100 %)
   double? get cloudiness => _valueFor('tcc_mean');
 
-  /// Nederbörd (mm/h)
+  /// Rainfall (mm/h)
   double? get precipitation => _valueFor('pmean');
 
-  /// Vindhastighet (m/s)
+  /// Wind speed (m/s)
   double? get windSpeed => _valueFor('ws');
 
   double? _valueFor(String name) {
@@ -104,7 +104,7 @@ class HourForecast {
   });
 }
 
-/// Convert SMHI time steps to daily forecasts
+// Convert SMHI time steps to daily forecasts
 List<DailyForecast> toDaily(List<SmhiTimeStep> steps) {
   if (steps.isEmpty) return [];
 

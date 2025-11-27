@@ -30,12 +30,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // === LAYER 1: Services (External dependencies) ===
+    // Services (External dependencies)
     final smhiApiService = SmhiApiService();
     final placeApiService = PlaceApiService();
     final cacheService = CacheService();
 
-    // === LAYER 2: Repositories (Data access abstraction) ===
+    // Repositories (Data access abstraction)
     final forecastRepository = ForecastRepository(
       apiService: smhiApiService,
       cacheService: cacheService,
@@ -45,12 +45,12 @@ class App extends StatelessWidget {
       apiService: placeApiService,
     );
 
-    // === LAYER 3: Use Cases (Business logic) ===
+    // Use Cases (Business logic)
     final loadForecastUseCase = LoadForecastUseCase(forecastRepository);
     final searchPlaceUseCase = SearchPlaceUseCase(placeRepository);
     final manageFavoritesUseCase = ManageFavoritesUseCase(placeRepository);
 
-    // === LAYER 4: ViewModels (Presentation logic) ===
+    // ViewModels (Presentation logic)
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

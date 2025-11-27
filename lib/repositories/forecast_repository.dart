@@ -5,7 +5,7 @@ import '../services/smhi_api_service.dart';
 import '../services/cache_service.dart';
 import '../utils/result.dart';
 
-/// Repository som abstraherar data access för prognoser
+// Repository that abstracts data access for forecasts
 class ForecastRepository {
   final SmhiApiService _apiService;
   final CacheService _cacheService;
@@ -16,18 +16,18 @@ class ForecastRepository {
   })  : _apiService = apiService,
         _cacheService = cacheService;
 
-  /// Hämta prognos från API eller cache
+  // Get forecast from API or cache
   Future<Result<(SmhiRoot, bool isOffline)>> getForecast(
       double lon,
       double lat,
       ) async {
     try {
-      // Försök API först
+      // Try API first
       final root = await _apiService
           .getForecast(lon, lat)
           .timeout(const Duration(seconds: 8));
 
-      // Spara i cache vid framgång
+      // Save in cache
       await _cacheService.saveMap(root.toJson());
 
       return Ok((root, false));
@@ -40,7 +40,7 @@ class ForecastRepository {
     }
   }
 
-  /// Ladda från cache (privat hjälpmetod)
+  /// Load from cache (private helper method)
   Future<Result<(SmhiRoot, bool isOffline)>> _loadFromCache() async {
     try {
       final raw = await _cacheService.loadMap();
